@@ -2,5 +2,6 @@
 {
     public interface IShareRepository : IGenericRepository<HourlyShareRate>
     {
+      
     }
 }

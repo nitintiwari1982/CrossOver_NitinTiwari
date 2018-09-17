@@ -1,0 +1,17 @@
+C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange.Tests\bin\Debug\netcoreapp2.0\NUnit3.TestAdapter.dll
+C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange.Tests\bin\Debug\netcoreapp2.0\nunit.engine.netstandard.dll
+C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange.Tests\bin\Debug\netcoreapp2.0\Mono.Cecil.dll
+C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange.Tests\bin\Debug\netcoreapp2.0\CrossExchange.Tests.deps.json
+C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange.Tests\bin\Debug\netcoreapp2.0\CrossExchange.Tests.runtimeconfig.json
+C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange.Tests\bin\Debug\netcoreapp2.0\CrossExchange.Tests.runtimeconfig.dev.json
+C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange.Tests\bin\Debug\netcoreapp2.0\CrossExchange.Tests.dll
+C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange.Tests\bin\Debug\netcoreapp2.0\CrossExchange.Tests.pdb
+C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange.Tests\bin\Debug\netcoreapp2.0\CrossExchange.dll
+C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange.Tests\bin\Debug\netcoreapp2.0\CrossExchange.pdb
+C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange.Tests\obj\Debug\netcoreapp2.0\CrossExchange.Tests.csprojAssemblyReference.cache
+C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange.Tests\obj\Debug\netcoreapp2.0\CrossExchange.Tests.csproj.CoreCompileInputs.cache
+C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange.Tests\obj\Debug\netcoreapp2.0\CrossExchange.Tests.AssemblyInfoInputs.cache
+C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange.Tests\obj\Debug\netcoreapp2.0\CrossExchange.Tests.AssemblyInfo.cs
+C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange.Tests\obj\Debug\netcoreapp2.0\CrossExchange.Tests.csproj.CopyComplete
+C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange.Tests\obj\Debug\netcoreapp2.0\CrossExchange.Tests.dll
+C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange.Tests\obj\Debug\netcoreapp2.0\CrossExchange.Tests.pdb

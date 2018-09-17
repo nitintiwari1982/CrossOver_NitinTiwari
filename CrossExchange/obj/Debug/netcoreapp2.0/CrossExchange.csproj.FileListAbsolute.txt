@@ -1,0 +1,10 @@
+C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange\bin\Debug\netcoreapp2.0\CrossExchange.deps.json
+C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange\bin\Debug\netcoreapp2.0\CrossExchange.runtimeconfig.json
+C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange\bin\Debug\netcoreapp2.0\CrossExchange.runtimeconfig.dev.json
+C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange\bin\Debug\netcoreapp2.0\CrossExchange.dll
+C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange\bin\Debug\netcoreapp2.0\CrossExchange.pdb
+C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange\obj\Debug\netcoreapp2.0\CrossExchange.csproj.CoreCompileInputs.cache
+C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange\obj\Debug\netcoreapp2.0\CrossExchange.AssemblyInfoInputs.cache
+C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange\obj\Debug\netcoreapp2.0\CrossExchange.AssemblyInfo.cs
+C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange\obj\Debug\netcoreapp2.0\CrossExchange.dll
+C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange\obj\Debug\netcoreapp2.0\CrossExchange.pdb

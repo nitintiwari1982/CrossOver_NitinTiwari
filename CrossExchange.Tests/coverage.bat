@@ -9,3 +9,5 @@ dotnet minicover reset --workdir ../
 dotnet test --no-build
 dotnet minicover uninstrument --workdir ../
 dotnet minicover report --workdir ../ --threshold 60
+
+pause

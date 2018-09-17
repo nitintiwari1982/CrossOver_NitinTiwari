@@ -52,8 +52,78 @@ namespace CrossExchange.Controller
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]TradeModel model)
         {
+            if (ModelState.IsValid)
+            {
+                if (!_portfolioRepository.IsExists(model.PortfolioId))
+                {
+                  return BadRequest(string.Format("Sorry {0} not a registered portfolio.", model.PortfolioId));
+                }
+                switch (model.Action)
+                {
+                    case "BUY":
+                        if (!IsSymbolExists(model.Symbol))
+                        {
+                            var buyShare = await _shareRepository.Query().Where(x => x.Symbol.Equals(model.Symbol)).OrderByDescending(x => x.TimeStamp).FirstOrDefaultAsync();
+                            await _tradeRepository.InsertAsync(MapToDb(model, buyShare));
+                        }
+                        else
+                        {
+                            return BadRequest(string.Format("Sorry share {0} doesn't asvailable to buy", model.Symbol));
+                        }
+                       
+                        break;
+                    case "SELL":
+                        var sellShare = await _shareRepository.Query().Where(x => x.Symbol.Equals(model.Symbol)).OrderByDescending(x => x.TimeStamp).FirstOrDefaultAsync();
+                        var availableForSell = GetAvailableShareToSell(model);
+                        if(availableForSell < model.NoOfShares)
+                        {
+                            return BadRequest(string.Format("sorry only {0} share available to sell", availableForSell));
+                        }
+                        else
+                        {
+                            var sellDetail = MapToDb(model, sellShare);
+                            await _tradeRepository.InsertAsync(sellDetail);
+                        }
+                        
+                        break;
+                    default:
+                        
+                        break;
+                }
+            }
             return Created("Trade", model);
         }
+
+        [NonAction]
+        private bool IsSymbolExists(string symbol)
+        {
+            var isExists = _shareRepository.Query().Where(x => x.Symbol.Equals(symbol)).Any();
+            return isExists;
+        } 
         
+        [NonAction]
+        private Trade MapToDb(TradeModel model, HourlyShareRate shareDetail)
+        {
+            var trade = new Trade();
+            trade.PortfolioId = model.PortfolioId;
+            trade.Symbol = model.Symbol;
+            trade.NoOfShares = model.NoOfShares;
+            trade.Price = model.NoOfShares * shareDetail.Rate;
+            trade.Action = model.Action;
+            return trade;
+        }
+
+        private int GetAvailableShareToSell(TradeModel model)
+        {
+            //// var shares = _tradeRepository.Query().Where(x => x.PortfolioId.Equals(model.PortfolioId) && x.Action.Equals("BUY")).ToList().GroupBy(y => new { y.Symbol, y.NoOfShares });
+
+            var result = from bb in _tradeRepository.Query().Where(x => x.PortfolioId.Equals(model.PortfolioId) && x.Action.Equals("BUY") && x.Symbol.Equals(model.Symbol))
+                     group bb by new { bb.Symbol, bb.PortfolioId } into g
+                     select new
+                     {
+                         Symbol = g.Sum(r => r.NoOfShares)
+                     };
+            return result.First().Symbol;
+        }
     }
 }
