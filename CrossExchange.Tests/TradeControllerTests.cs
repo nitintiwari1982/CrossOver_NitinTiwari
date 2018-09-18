@@ -25,6 +25,7 @@ namespace CrossExchange.Tests
         [SetUp]
         public void SetUp()
         {
+            var exchangeContext = new Mock<ExchangeContext>();
             ShareRepositoryMock = new Mock<IShareRepository>();
             TradeRepositoryMock = new Mock<ITradeRepository>();
             PortfolioRepositoryMock = new Mock<IPortfolioRepository>();
@@ -43,7 +44,7 @@ namespace CrossExchange.Tests
 
         [Test]
         [TestCase("BUY", 10, 1, "ABC")]// Symbol doesn't exists
-        [TestCase("SEL", 100, 1, "REL")] // Portfolio have insufficent to sell
+        [TestCase("SEL", 1000, 1, "REL")] // Portfolio have insufficent to sell
         [TestCase("BUY", 10, 5, "REL")]// Portfolio doesn't exists
         public async Task Get_bad_request_for_all_mismatches(string action, int quantity, int portfolioId, string symbol)
         {
@@ -53,7 +54,7 @@ namespace CrossExchange.Tests
             TradeModel.Symbol = symbol;
             var result = await tradeController.Post(TradeModel);
             Assert.NotNull(result);
-            var createResult = result as CreatedResult;
+            var createResult = result as BadRequestResult;
             Assert.AreEqual(400, createResult.StatusCode);
         }
 

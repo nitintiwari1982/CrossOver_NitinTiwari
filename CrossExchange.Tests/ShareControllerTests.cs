@@ -31,6 +31,7 @@ namespace CrossExchange.Tests
             // Arrange
 
             // Act
+
             var result = await _shareController.Post(hourRate);
 
             // Assert
