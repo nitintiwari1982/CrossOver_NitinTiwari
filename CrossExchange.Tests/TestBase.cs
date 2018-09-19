@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ namespace CrossExchange.Tests
 {
    public class TestBase
     {
-        public ITradeRepository TradeRepository { get; set; }
+        public Mock<ITradeRepository> TradeRepository { get; set; }
         public IPortfolioRepository PortfolioRepository { get; set; }
         public IShareRepository ShareRepository { get; set; }
 
@@ -21,7 +22,7 @@ namespace CrossExchange.Tests
             var exchangeContext = new DbContextOptionsBuilder<ExchangeContext>();
             exchangeContext.UseSqlServer(connectionString);
             PortfolioRepository = new PortfolioRepository(new ExchangeContext(exchangeContext.Options));
-            TradeRepository = new TradeRepository(new ExchangeContext(exchangeContext.Options));
+            TradeRepository = new Mock<ITradeRepository>();
             ShareRepository = new ShareRepository(new ExchangeContext(exchangeContext.Options));
         }
 

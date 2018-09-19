@@ -24,7 +24,7 @@ namespace CrossExchange.Tests
         {
             base.SetUp();                     
             TradeModel = new TradeModel();
-            tradeController = new TradeController(ShareRepository, TradeRepository, PortfolioRepository);
+            tradeController = new TradeController(ShareRepository, TradeRepository.Object, PortfolioRepository);
         }
 
         [Test]
