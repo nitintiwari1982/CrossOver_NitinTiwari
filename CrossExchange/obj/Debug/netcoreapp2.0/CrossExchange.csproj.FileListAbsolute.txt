@@ -8,3 +8,4 @@ C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange\obj\Debug\netcoreapp
 C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange\obj\Debug\netcoreapp2.0\CrossExchange.AssemblyInfo.cs
 C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange\obj\Debug\netcoreapp2.0\CrossExchange.dll
 C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange\obj\Debug\netcoreapp2.0\CrossExchange.pdb
+C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange\obj\Debug\netcoreapp2.0\CrossExchange.csprojAssemblyReference.cache

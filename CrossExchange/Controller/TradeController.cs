@@ -90,7 +90,7 @@ namespace CrossExchange.Controller
 
                             break;
                         default:
-
+                            return BadRequest();
                             break;
                     }
                 }

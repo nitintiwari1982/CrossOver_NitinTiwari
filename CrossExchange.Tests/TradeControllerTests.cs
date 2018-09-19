@@ -6,46 +6,33 @@ using System.Text;
 using CrossExchange.Controller;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Protocols;
+using Microsoft.Extensions.Configuration;
 
 namespace CrossExchange.Tests
 {
     [TestFixture]
-   public class TradeControllerTests
+   public class TradeControllerTests : TestBase
     {
-        public Mock<ITradeRepository> TradeRepositoryMock { get; set; }
-
-        public Mock<IPortfolioRepository> PortfolioRepositoryMock { get; set; }
-
-        public Mock<IShareRepository> ShareRepositoryMock { get; set; }
-
+           
         public TradeModel TradeModel { get; set; }
-
         private TradeController tradeController;
-
+        
         [SetUp]
-        public void SetUp()
+        public void SetUpTradeController()
         {
-            var exchangeContext = new Mock<ExchangeContext>();
-            ShareRepositoryMock = new Mock<IShareRepository>();
-            TradeRepositoryMock = new Mock<ITradeRepository>();
-            PortfolioRepositoryMock = new Mock<IPortfolioRepository>();
+            base.SetUp();                     
             TradeModel = new TradeModel();
-            tradeController = new TradeController(ShareRepositoryMock.Object, TradeRepositoryMock.Object, PortfolioRepositoryMock.Object);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            ShareRepositoryMock = null;
-            TradeRepositoryMock = null;
-            PortfolioRepositoryMock = null;
-            TradeModel = null;
+            tradeController = new TradeController(ShareRepository, TradeRepository, PortfolioRepository);
         }
 
         [Test]
         [TestCase("BUY", 10, 1, "ABC")]// Symbol doesn't exists
-        [TestCase("SEL", 1000, 1, "REL")] // Portfolio have insufficent to sell
+        [TestCase("SELL", 1000, 1, "REL")] // Portfolio have insufficent to sell
         [TestCase("BUY", 10, 5, "REL")]// Portfolio doesn't exists
+        [TestCase("SEL", 10, 5, "REL")]// No SEL operation Exists
+        [TestCase("BUYY", 10, 5, "REL")]// No BUYY Operatin exists
         public async Task Get_bad_request_for_all_mismatches(string action, int quantity, int portfolioId, string symbol)
         {
             TradeModel.Action = action;
@@ -60,7 +47,7 @@ namespace CrossExchange.Tests
 
         [Test]
         [TestCase("BUY", 10, 1, "REL")]
-        [TestCase("SEL", 10, 1, "REL")]
+        [TestCase("SELL", 10, 1, "REL")]
         public async Task Buy_share_symbol_exists(string action, int quantity, int portfolioId, string symbol)
         {
             TradeModel.Action = action;
