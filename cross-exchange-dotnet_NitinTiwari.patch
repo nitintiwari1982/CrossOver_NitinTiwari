@@ -1,186 +1,216 @@
-From c53b04c3a9d5c55ef741f8e4e974da8be948cac0 Mon Sep 17 00:00:00 2001
+From 5c1beb9019318999e3763306edb98e58c9f1d015 Mon Sep 17 00:00:00 2001
 From: InterviewTrial <skanchwala@4qlearning.com>
-Date: Tue, 18 Sep 2018 23:37:37 +0530
+Date: Wed, 19 Sep 2018 22:14:54 +0530
 Subject: [PATCH] no message
 
 ---
- CrossExchange.Tests/ShareControllerTests.cs |   1 +
- CrossExchange.Tests/TradeControllerTests.cs |   5 +-
- CrossExchange/Controller/TradeController.cs | 108 ++++++++++++++++------------
- 3 files changed, 66 insertions(+), 48 deletions(-)
+ CrossExchange.Tests/CrossExchange.Tests.csproj     |  6 ++++
+ CrossExchange.Tests/TestBase.cs                    | 36 ++++++++++++++++++++
+ CrossExchange.Tests/TradeControllerTests.cs        | 39 ++++++++--------------
+ CrossExchange.Tests/appsettings.json               |  5 +++
+ .../bin/Debug/netcoreapp2.0/appsettings.json       |  5 +++
+ .../bin/Debug/netcoreapp2.0/nunit_random_seed.tmp  |  1 +
+ ...CrossExchange.Tests.csproj.FileListAbsolute.txt |  1 +
+ CrossExchange/Controller/TradeController.cs        |  2 +-
+ .../CrossExchange.csproj.FileListAbsolute.txt      |  1 +
+ 9 files changed, 69 insertions(+), 27 deletions(-)
+ create mode 100644 CrossExchange.Tests/TestBase.cs
+ create mode 100644 CrossExchange.Tests/appsettings.json
+ create mode 100644 CrossExchange.Tests/bin/Debug/netcoreapp2.0/appsettings.json
+ create mode 100644 CrossExchange.Tests/bin/Debug/netcoreapp2.0/nunit_random_seed.tmp
 
-diff --git a/CrossExchange.Tests/ShareControllerTests.cs b/CrossExchange.Tests/ShareControllerTests.cs
-index 3f2f17d..e039328 100644
---- a/CrossExchange.Tests/ShareControllerTests.cs
-+++ b/CrossExchange.Tests/ShareControllerTests.cs
-@@ -31,6 +31,7 @@ namespace CrossExchange.Tests
-             // Arrange
+diff --git a/CrossExchange.Tests/CrossExchange.Tests.csproj b/CrossExchange.Tests/CrossExchange.Tests.csproj
+index 435191c..f64acea 100644
+--- a/CrossExchange.Tests/CrossExchange.Tests.csproj
++++ b/CrossExchange.Tests/CrossExchange.Tests.csproj
+@@ -19,4 +19,10 @@
+     <ProjectReference Include="..\CrossExchange\CrossExchange.csproj" />
+   </ItemGroup>
  
-             // Act
++  <ItemGroup>
++    <None Update="appsettings.json">
++      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
++    </None>
++  </ItemGroup>
 +
-             var result = await _shareController.Post(hourRate);
- 
-             // Assert
+ </Project>
+diff --git a/CrossExchange.Tests/TestBase.cs b/CrossExchange.Tests/TestBase.cs
+new file mode 100644
+index 0000000..5b6230d
+--- /dev/null
++++ b/CrossExchange.Tests/TestBase.cs
+@@ -0,0 +1,36 @@
++﻿using Microsoft.EntityFrameworkCore;
++using Microsoft.Extensions.Configuration;
++using NUnit.Framework;
++using System;
++using System.Collections.Generic;
++using System.Text;
++
++namespace CrossExchange.Tests
++{
++   public class TestBase
++    {
++        public ITradeRepository TradeRepository { get; set; }
++        public IPortfolioRepository PortfolioRepository { get; set; }
++        public IShareRepository ShareRepository { get; set; }
++
++        [SetUp]
++        public void SetUp()
++        {
++            var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
++            var connectionString = config["ConnectionStrings:DefaultConnection"];
++            var exchangeContext = new DbContextOptionsBuilder<ExchangeContext>();
++            exchangeContext.UseSqlServer(connectionString);
++            PortfolioRepository = new PortfolioRepository(new ExchangeContext(exchangeContext.Options));
++            TradeRepository = new TradeRepository(new ExchangeContext(exchangeContext.Options));
++            ShareRepository = new ShareRepository(new ExchangeContext(exchangeContext.Options));
++        }
++
++        [TearDown]
++        public void TearDown()
++        {
++            TradeRepository = null;
++            PortfolioRepository = null;
++            ShareRepository = null;
++        }
++    }
++}
 diff --git a/CrossExchange.Tests/TradeControllerTests.cs b/CrossExchange.Tests/TradeControllerTests.cs
-index d06d9ae..fb6e940 100644
+index fb6e940..78e0f27 100644
 --- a/CrossExchange.Tests/TradeControllerTests.cs
 +++ b/CrossExchange.Tests/TradeControllerTests.cs
-@@ -25,6 +25,7 @@ namespace CrossExchange.Tests
+@@ -6,46 +6,33 @@ using System.Text;
+ using CrossExchange.Controller;
+ using System.Threading.Tasks;
+ using Microsoft.AspNetCore.Mvc;
++using Microsoft.EntityFrameworkCore;
++using Microsoft.IdentityModel.Protocols;
++using Microsoft.Extensions.Configuration;
+ 
+ namespace CrossExchange.Tests
+ {
+     [TestFixture]
+-   public class TradeControllerTests
++   public class TradeControllerTests : TestBase
+     {
+-        public Mock<ITradeRepository> TradeRepositoryMock { get; set; }
+-
+-        public Mock<IPortfolioRepository> PortfolioRepositoryMock { get; set; }
+-
+-        public Mock<IShareRepository> ShareRepositoryMock { get; set; }
+-
++           
+         public TradeModel TradeModel { get; set; }
+-
+         private TradeController tradeController;
+-
++        
          [SetUp]
-         public void SetUp()
+-        public void SetUp()
++        public void SetUpTradeController()
          {
-+            var exchangeContext = new Mock<ExchangeContext>();
-             ShareRepositoryMock = new Mock<IShareRepository>();
-             TradeRepositoryMock = new Mock<ITradeRepository>();
-             PortfolioRepositoryMock = new Mock<IPortfolioRepository>();
-@@ -43,7 +44,7 @@ namespace CrossExchange.Tests
+-            var exchangeContext = new Mock<ExchangeContext>();
+-            ShareRepositoryMock = new Mock<IShareRepository>();
+-            TradeRepositoryMock = new Mock<ITradeRepository>();
+-            PortfolioRepositoryMock = new Mock<IPortfolioRepository>();
++            base.SetUp();                     
+             TradeModel = new TradeModel();
+-            tradeController = new TradeController(ShareRepositoryMock.Object, TradeRepositoryMock.Object, PortfolioRepositoryMock.Object);
+-        }
+-
+-        [TearDown]
+-        public void TearDown()
+-        {
+-            ShareRepositoryMock = null;
+-            TradeRepositoryMock = null;
+-            PortfolioRepositoryMock = null;
+-            TradeModel = null;
++            tradeController = new TradeController(ShareRepository, TradeRepository, PortfolioRepository);
+         }
  
          [Test]
          [TestCase("BUY", 10, 1, "ABC")]// Symbol doesn't exists
--        [TestCase("SEL", 100, 1, "REL")] // Portfolio have insufficent to sell
-+        [TestCase("SEL", 1000, 1, "REL")] // Portfolio have insufficent to sell
+-        [TestCase("SEL", 1000, 1, "REL")] // Portfolio have insufficent to sell
++        [TestCase("SELL", 1000, 1, "REL")] // Portfolio have insufficent to sell
          [TestCase("BUY", 10, 5, "REL")]// Portfolio doesn't exists
++        [TestCase("SEL", 10, 5, "REL")]// No SEL operation Exists
++        [TestCase("BUYY", 10, 5, "REL")]// No BUYY Operatin exists
          public async Task Get_bad_request_for_all_mismatches(string action, int quantity, int portfolioId, string symbol)
          {
-@@ -53,7 +54,7 @@ namespace CrossExchange.Tests
-             TradeModel.Symbol = symbol;
-             var result = await tradeController.Post(TradeModel);
-             Assert.NotNull(result);
--            var createResult = result as CreatedResult;
-+            var createResult = result as BadRequestResult;
-             Assert.AreEqual(400, createResult.StatusCode);
-         }
+             TradeModel.Action = action;
+@@ -60,7 +47,7 @@ namespace CrossExchange.Tests
  
+         [Test]
+         [TestCase("BUY", 10, 1, "REL")]
+-        [TestCase("SEL", 10, 1, "REL")]
++        [TestCase("SELL", 10, 1, "REL")]
+         public async Task Buy_share_symbol_exists(string action, int quantity, int portfolioId, string symbol)
+         {
+             TradeModel.Action = action;
+diff --git a/CrossExchange.Tests/appsettings.json b/CrossExchange.Tests/appsettings.json
+new file mode 100644
+index 0000000..8e42c39
+--- /dev/null
++++ b/CrossExchange.Tests/appsettings.json
+@@ -0,0 +1,5 @@
++{
++  "ConnectionStrings": {
++    "DefaultConnection": "Server=localhost;Database=CrossExchangeDb;Trusted_Connection=True;User Id=cincuser; Password=123456"
++  }
++}
+\ No newline at end of file
+diff --git a/CrossExchange.Tests/bin/Debug/netcoreapp2.0/appsettings.json b/CrossExchange.Tests/bin/Debug/netcoreapp2.0/appsettings.json
+new file mode 100644
+index 0000000..8e42c39
+--- /dev/null
++++ b/CrossExchange.Tests/bin/Debug/netcoreapp2.0/appsettings.json
+@@ -0,0 +1,5 @@
++{
++  "ConnectionStrings": {
++    "DefaultConnection": "Server=localhost;Database=CrossExchangeDb;Trusted_Connection=True;User Id=cincuser; Password=123456"
++  }
++}
+\ No newline at end of file
+diff --git a/CrossExchange.Tests/bin/Debug/netcoreapp2.0/nunit_random_seed.tmp b/CrossExchange.Tests/bin/Debug/netcoreapp2.0/nunit_random_seed.tmp
+new file mode 100644
+index 0000000..db8d4f6
+--- /dev/null
++++ b/CrossExchange.Tests/bin/Debug/netcoreapp2.0/nunit_random_seed.tmp
+@@ -0,0 +1 @@
++375299982
+\ No newline at end of file
+diff --git a/CrossExchange.Tests/obj/Debug/netcoreapp2.0/CrossExchange.Tests.csproj.FileListAbsolute.txt b/CrossExchange.Tests/obj/Debug/netcoreapp2.0/CrossExchange.Tests.csproj.FileListAbsolute.txt
+index ca77eda..3f68c02 100644
+--- a/CrossExchange.Tests/obj/Debug/netcoreapp2.0/CrossExchange.Tests.csproj.FileListAbsolute.txt
++++ b/CrossExchange.Tests/obj/Debug/netcoreapp2.0/CrossExchange.Tests.csproj.FileListAbsolute.txt
+@@ -15,3 +15,4 @@ C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange.Tests\obj\Debug\netc
+ C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange.Tests\obj\Debug\netcoreapp2.0\CrossExchange.Tests.csproj.CopyComplete
+ C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange.Tests\obj\Debug\netcoreapp2.0\CrossExchange.Tests.dll
+ C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange.Tests\obj\Debug\netcoreapp2.0\CrossExchange.Tests.pdb
++C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange.Tests\bin\Debug\netcoreapp2.0\appsettings.json
 diff --git a/CrossExchange/Controller/TradeController.cs b/CrossExchange/Controller/TradeController.cs
-index 5422157..0102b22 100644
+index 0102b22..8ec0ae7 100644
 --- a/CrossExchange/Controller/TradeController.cs
 +++ b/CrossExchange/Controller/TradeController.cs
-@@ -52,46 +52,55 @@ namespace CrossExchange.Controller
-         [HttpPost]
-         public async Task<IActionResult> Post([FromBody]TradeModel model)
-         {
--            if (ModelState.IsValid)
-+            try
-             {
--                if (!_portfolioRepository.IsExists(model.PortfolioId))
-+                if (ModelState.IsValid)
-                 {
--                  return BadRequest(string.Format("Sorry {0} not a registered portfolio.", model.PortfolioId));
--                }
--                switch (model.Action)
--                {
--                    case "BUY":
--                        if (!IsSymbolExists(model.Symbol))
--                        {
--                            var buyShare = await _shareRepository.Query().Where(x => x.Symbol.Equals(model.Symbol)).OrderByDescending(x => x.TimeStamp).FirstOrDefaultAsync();
--                            await _tradeRepository.InsertAsync(MapToDb(model, buyShare));
--                        }
--                        else
--                        {
--                            return BadRequest(string.Format("Sorry share {0} doesn't asvailable to buy", model.Symbol));
--                        }
--                       
--                        break;
--                    case "SELL":
--                        var sellShare = await _shareRepository.Query().Where(x => x.Symbol.Equals(model.Symbol)).OrderByDescending(x => x.TimeStamp).FirstOrDefaultAsync();
--                        var availableForSell = GetAvailableShareToSell(model);
--                        if(availableForSell < model.NoOfShares)
--                        {
--                            return BadRequest(string.Format("sorry only {0} share available to sell", availableForSell));
--                        }
--                        else
--                        {
--                            var sellDetail = MapToDb(model, sellShare);
--                            await _tradeRepository.InsertAsync(sellDetail);
--                        }
--                        
--                        break;
--                    default:
--                        
--                        break;
-+                    var isExists = _portfolioRepository.IsExists(model.PortfolioId);
-+                    if (!isExists)
-+                    {
-+                        return BadRequest();
-+                    }
-+                    switch (model.Action)
-+                    {
-+                        case "BUY":
-+                            if (IsSymbolExists(model.Symbol))
-+                            {
-+                                var buyShare = await _shareRepository.Query().Where(x => x.Symbol.Equals(model.Symbol)).OrderByDescending(x => x.TimeStamp).FirstOrDefaultAsync();
-+                                await _tradeRepository.InsertAsync(MapToDb(model, buyShare));
-+                            }
-+                            else
-+                            {
-+                                return BadRequest();
-+                            }
-+
-+                            break;
-+                        case "SELL":
-+                            var sellShare = await _shareRepository.Query().Where(x => x.Symbol.Equals(model.Symbol)).OrderByDescending(x => x.TimeStamp).FirstOrDefaultAsync();
-+                            var availableForSell = GetAvailableShareToSell(model);
-+                            if (availableForSell < model.NoOfShares)
-+                            {
-+                                return BadRequest();
-+                            }
-+                            else
-+                            {
-+                                var sellDetail = MapToDb(model, sellShare);
-+                                await _tradeRepository.InsertAsync(sellDetail);
-+                            }
-+
-+                            break;
-+                        default:
-+
-+                            break;
-+                    }
-                 }
-+                return Created("Trade", model);
-             }
--            return Created("Trade", model);
-+            catch (Exception ex)
-+            {
-+                throw;
-+            }
-+           
-         }
+@@ -90,7 +90,7 @@ namespace CrossExchange.Controller
  
-         [NonAction]
-@@ -114,16 +123,23 @@ namespace CrossExchange.Controller
-         }
- 
-         private int GetAvailableShareToSell(TradeModel model)
--        {
--            //// var shares = _tradeRepository.Query().Where(x => x.PortfolioId.Equals(model.PortfolioId) && x.Action.Equals("BUY")).ToList().GroupBy(y => new { y.Symbol, y.NoOfShares });
+                             break;
+                         default:
 -
--            var result = from bb in _tradeRepository.Query().Where(x => x.PortfolioId.Equals(model.PortfolioId) && x.Action.Equals("BUY") && x.Symbol.Equals(model.Symbol))
--                     group bb by new { bb.Symbol, bb.PortfolioId } into g
--                     select new
--                     {
--                         Symbol = g.Sum(r => r.NoOfShares)
--                     };
--            return result.First().Symbol;
-+        {            
-+            var result = _tradeRepository.Query().Where(x => x.PortfolioId.Equals(model.PortfolioId) && x.Symbol.Equals(model.Symbol));
-+            var v = (from p in result
-+                    group p by p.Action into Temp
-+                    select new
-+                    {
-+                        Action = Temp.Key,
-+                        Units = Temp.Sum(r => r.NoOfShares)
-+                    }).ToList();
-+            if(v != null)
-+            {
-+                var totalBuy = v.FirstOrDefault(x => x.Action.Equals("BUY")) == null ? 0 : v.FirstOrDefault(x => x.Action.Equals("BUY")).Units;
-+                var alreadySell = v.FirstOrDefault(x => x.Action.Equals("SELL")) == null ? 0 : v.FirstOrDefault(x => x.Action.Equals("SELL")).Units;
-+                return totalBuy - alreadySell;
-+            }
-+             
-+            return 0;
-         }
-     }
- }
++                            return BadRequest();
+                             break;
+                     }
+                 }
+diff --git a/CrossExchange/obj/Debug/netcoreapp2.0/CrossExchange.csproj.FileListAbsolute.txt b/CrossExchange/obj/Debug/netcoreapp2.0/CrossExchange.csproj.FileListAbsolute.txt
+index 719ae68..9fdfb3d 100644
+--- a/CrossExchange/obj/Debug/netcoreapp2.0/CrossExchange.csproj.FileListAbsolute.txt
++++ b/CrossExchange/obj/Debug/netcoreapp2.0/CrossExchange.csproj.FileListAbsolute.txt
+@@ -8,3 +8,4 @@ C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange\obj\Debug\netcoreapp
+ C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange\obj\Debug\netcoreapp2.0\CrossExchange.AssemblyInfo.cs
+ C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange\obj\Debug\netcoreapp2.0\CrossExchange.dll
+ C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange\obj\Debug\netcoreapp2.0\CrossExchange.pdb
++C:\SampleProjects\CrossExchange\CrossExchange\CrossExchange\obj\Debug\netcoreapp2.0\CrossExchange.csprojAssemblyReference.cache
 -- 
 2.10.2.windows.1
 
